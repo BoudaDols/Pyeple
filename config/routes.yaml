@@ -1,3 +1,57 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+
+api_login_check:
+  path: /api/login_check
+
+
+Actualites:
+  type     : rest
+  resource : App\Controller\ActualiteController
+  prefix   : api
+
+Hashtags:
+  type     : rest
+  resource : App\Controller\HashtagController
+  prefix   : api
+
+Abonnements:
+  type     : rest
+  resource : App\Controller\AbonementController
+  prefix   : api
+
+Commentaires:
+  type     : rest
+  resource : App\Controller\CommentaireController
+  prefix   : api
+
+Users:
+  type     : rest
+  resource : App\Controller\UserController
+  prefix   : api
+
+Groupes:
+  type     : rest
+  resource : App\Controller\GroupeController
+  prefix   : api
+
+LikeActus:
+  type     : rest
+  resource : App\Controller\LikeActuController
+  prefix   : api
+
+LikeComments:
+  type     : rest
+  resource : App\Controller\LikeCommentController
+  prefix   : api
+
+UserHasGroups:
+  type     : rest
+  resource : App\Controller\UserhasgroupController
+  prefix   : api
+
+Messages:
+  type     : rest
+  resource : App\Controller\MessageController
+  prefix   : api

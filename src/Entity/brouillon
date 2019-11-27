@@ -1,0 +1,41 @@
+/**
+     * @Route("/api/hashtag/getname/", name="hashtags_byname")
+     * @param Request $request
+     * @return |FOS|RestBundle|View|view
+     */
+    public function hashtagByNameAction(Request $request)
+    {
+        $nom = $request->get('nom');
+        $hashtags = $this->hashtagRepository->createQueryBuilder('m')
+            ->where("m.nomhashtag REGEXP '?1'")
+            ->andWhere("m.etathashtag=1")
+            ->setParameter(1, $nom)
+            ->getQuery()
+            ->getResult();
+
+        if (is_null($hashtags))
+            return $this->json([
+                "message" => "Hashtag does not exist"
+            ], Response::HTTP_NOT_FOUND);
+        else {
+            $formatted = [];
+            $i = 0;
+
+            foreach ($hashtags as $hashtag):
+                $creator = $this->userRepository->find($hashtag->getCreatorref());
+                $formatted = [
+                    "name" => $hashtag->getNomhashtag(),
+                    "category" => $hashtag->getCategoriehashtag(),
+                    "description" => $hashtag->getDescriptionhashtgag(),
+                    "timeCreated" => $hashtag->getTimecreated(),
+                    "creator" => $creator->getUsername(),
+                ];
+                $i++;
+            endforeach;
+            $hashtags = $this->serializer->serialize($formatted, 'json');
+            $response = new Response($hashtags);
+            $response->headers->set('Content-Type', 'application/json');
+
+            return $response;
+        }
+    }
