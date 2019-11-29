@@ -6,7 +6,9 @@
       <w>abonne</w>
       <w>abonneref</w>
       <w>actu</w>
+      <w>actualite</w>
       <w>actualites</w>
+      <w>acturef</w>
       <w>actus</w>
       <w>aujourdhui</w>
       <w>categorie</w>
@@ -14,6 +16,8 @@
       <w>formated</w>
       <w>hashtag</w>
       <w>hashtags</w>
+      <w>idactu</w>
+      <w>likeactu</w>
       <w>publisherref</w>
     </words>
   </dictionary>

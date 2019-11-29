@@ -43,24 +43,26 @@ class ActualiteController extends AbstractFOSRestController
 
     public function getActualitesAction(){
         $actualites = $this->actualiteRepository->findAll();
-        $formatted = [];
+        $formatted = array();
         $i = 0;
         foreach($actualites as $actualite):
             //$likes = $this->likeactuRepository->findBy(array("acturef" => $actualite->getIdactu()));
-            $formatted[$i]=[
-                "type"=> $actualite->getType(),
+
+            $formatted[$i]=array(
+                "type"=> $actualite->getType()[0],
                 "message"=> $actualite->getMessage(),
                 "categorie"=> $actualite->getCategorie(),
                 "content"=> $actualite->getContent(),
                 "publisherref"=> $actualite->getPublisherref(),
                 "time"=> $actualite->getTime()->getTimestamp(),
                 "numLike" =>$actualite->getNumlike(),
-            ];
+            );
             $i++;
         endforeach;
 
-        $data=$this->serializer->serialize($formatted,'json');
-        $response=new Response($data);
+        $formatted = json_encode($formatted, JSON_FORCE_OBJECT);
+
+        $response=new Response($formatted);
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
@@ -123,11 +125,8 @@ class ActualiteController extends AbstractFOSRestController
                 "publisherref"=> $publisher->getUsername(),
                 "time"=> $actualite->getTime()->getTimestamp()
             ];
-            $actualite = $this->serializer->serialize($formatted,'json');
-            $response=new Response($actualite);
-            $response->headers->set('Content-Type', 'application/json');
 
-            return $response;
+            return $this->json($formatted, Response::HTTP_OK);
         }
         else
             return new Response('',Response::HTTP_NOT_FOUND);
@@ -161,8 +160,8 @@ class ActualiteController extends AbstractFOSRestController
             $publisher = $this->userRepository->find($pub->getPublisherref());
             //$likes = $this->likeactuRepository->findBy(array("acturef" => $pub->getIdactu()));
 
-            $formatted[$i]=[
-                "id"=> $pub->getIdactu(),
+            $formatted["'".$i."'"]=[
+                "id"=> $pub->getIdactu()[0],
                 "type"=> $pub->getType(),
                 "message"=> $pub->getMessage(),
                 "categorie"=> $pub->getCategorie(),
@@ -176,12 +175,7 @@ class ActualiteController extends AbstractFOSRestController
             $i++;
         endforeach;
 
-        $data=$this->serializer->serialize($formatted, 'json');
-
-        $response=new Response($data);
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
+        return $this->json($formatted, Response::HTTP_OK);
     }
 
     /**
@@ -241,7 +235,7 @@ class ActualiteController extends AbstractFOSRestController
                 //$likes = $this->likeactuRepository->findBy(array("acturef" => $actu->getIdactu()));
 
                 $formated[$k]=[
-                    "id"=> $actu->getIdactu(),
+                    "id"=> $actu->getIdactu()[0],
                     "type"=> $actu->getType(),
                     "message"=> $actu->getMessage(),
                     "categorie"=> $actu->getCategorie(),
@@ -255,7 +249,12 @@ class ActualiteController extends AbstractFOSRestController
                 $k++;
             endforeach;
 
-            return $this->json($formated, Response::HTTP_OK);
+            $formated = json_encode($formated, JSON_FORCE_OBJECT);
+
+            $response=new Response($formated);
+            $response->headers->set('Content-Type', 'application/json');
+
+            return $response;
         }
     }
 
@@ -303,7 +302,7 @@ class ActualiteController extends AbstractFOSRestController
 
                 $formated[$k]=[
                     "id"=> $actu->getIdactu(),
-                    "type"=> $actu->getType(),
+                    "type"=> $actu->getType()[0],
                     "message"=> $actu->getMessage(),
                     "categorie"=> $actu->getCategorie(),
                     "content"=> $actu->getContent(),
@@ -316,7 +315,12 @@ class ActualiteController extends AbstractFOSRestController
                 $k++;
             endforeach;
 
-            return $this->json($formated, Response::HTTP_OK);
+            $formated = json_encode($formated, JSON_FORCE_OBJECT);
+
+            $response=new Response($formated);
+            $response->headers->set('Content-Type', 'application/json');
+
+            return $response;
         }
     }
 }

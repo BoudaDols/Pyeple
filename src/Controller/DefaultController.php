@@ -2,19 +2,26 @@
 
 namespace App\Controller;
 
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class DefaultController extends AbstractController
+class DefaultController extends AbstractFOSRestController
 {
     /**
-     * @Route("/default", name="default")
+     * @Route("/", name="default")
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
+        $currentRoute = $request->attributes->get('_route');
         return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/DefaultController.php',
-        ]);
+            "link" => $this->get('router')->generate($currentRoute, array('slug' => $request), true)
+        ], Response::HTTP_OK);
     }
+
 }
