@@ -24,9 +24,26 @@ class LikeCommentController extends AbstractController
      *@var ActualiteRepository
      */
     private $actualiteRepository;
+    /**
+     * @var UserRepository
+     */
     private $userRepository;
+    /**
+     * @var LikecommentRepository
+     */
     private $likecommentRepository;
+    /**
+     * @var CommentaireRepository
+     */
     private $commentaireRepository;
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
 
     public function __construct(ActualiteRepository $actualiteRepository, CommentaireRepository $commentaireRepository, LikecommentRepository $likecommentRepository, UserRepository $userRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer)
     {
@@ -46,9 +63,12 @@ class LikeCommentController extends AbstractController
      */
     public function postLikeCommentAction(Request $request){
         $idComment = $request->get('idComment');
-        $username = $request->get('username');
+        //$username = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
 
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
         $comment = $this->commentaireRepository->find($idComment);
 
         if(is_null($comment) or is_null($user))
@@ -84,9 +104,12 @@ class LikeCommentController extends AbstractController
      */
     public function deleteLikeCommentAction(Request $request){
         $idComment = $request->get('idComment');
-        $username = $request->get('username');
+        //$username = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
 
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
         $comment = $this->commentaireRepository->find($idComment);
 
         if(is_null($comment) or is_null($user))

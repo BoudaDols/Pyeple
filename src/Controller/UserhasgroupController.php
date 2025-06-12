@@ -22,6 +22,14 @@ class UserhasgroupController extends AbstractController
     private $userRepository;
     private $groupeRepository;
     private $userhasgroupeRepository;
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
 
     public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer, GroupeRepository $groupeRepository, UserhasgroupeRepository $userhasgroupeRepository)
     {
@@ -40,11 +48,14 @@ class UserhasgroupController extends AbstractController
     public function patchUserhasgroupeAction(Request $request){
         $idGroupe = $request->get('idGroupe');
         $member = $request->get('member');
-        $username = $request->get('username');
+        //$username = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
         $newDroit = $request->get('droit');
 
         $memberID=$this->userRepository->findOneBy(array('username' => $member));
-        $admin = $this->userRepository->findOneBy(array("username" => $username));
+        $admin = $this->userRepository->findOneBy(array("username" => $username->username));
         $realAdmin = $this->userhasgroupeRepository->createQueryBuilder('u')
             ->where('u.grouperef=?1')
             ->andWhere('u.userref=?2')

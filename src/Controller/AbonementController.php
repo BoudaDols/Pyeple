@@ -41,10 +41,13 @@ class AbonementController extends AbstractFOSRestController
      * @return |FOS|RestBundle|View|view
      */
     public function postAbonnementAction(Request $request){
-        $username = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
+        //$username = $request->get('username');
         $id = $request->get('idH');
 
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
         $hashtag = $this->hashtagRepository->find($id);
 
         if(is_null($hashtag) OR is_null($user))
@@ -77,10 +80,13 @@ class AbonementController extends AbstractFOSRestController
      * @return |FOS|RestBundle|View|view
      */
     public function deleteAbonnementAction(Request $request){
-        $username = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
+        //$username = $request->get('username');
         $idH = $request->get('id');
 
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
         $hashtag = $this->hashtagRepository->find($idH);
 
         if(is_null($hashtag) OR is_null($user))

@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Sessionutilisateur
  *
- * @ORM\Table(name="sessionutilisateur", uniqueConstraints={@ORM\UniqueConstraint(name="utilisateurREF", columns={"utilisateurREF"}), @ORM\UniqueConstraint(name="cleToken", columns={"cleToken"})})
+ * @ORM\Table(name="sessionutilisateur", uniqueConstraints={@ORM\UniqueConstraint(name="cleToken", columns={"cleToken"}), @ORM\UniqueConstraint(name="utilisateurREF", columns={"utilisateurREF"})})
  * @ORM\Entity
  */
 class Sessionutilisateur

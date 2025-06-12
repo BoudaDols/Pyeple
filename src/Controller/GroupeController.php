@@ -25,6 +25,14 @@ class GroupeController extends AbstractFOSRestController
     private $userRepository;
     private $groupeRepository;
     private $userhasgroupeRepository;
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
 
     public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer, GroupeRepository $groupeRepository, UserhasgroupeRepository $userhasgroupeRepository)
     {
@@ -42,13 +50,17 @@ class GroupeController extends AbstractFOSRestController
      * @return |FOS|RestBundle|View|view
      */
     public function postGroupeAction(Request $request){
-        $username = $request->get('username');
+        //$username = $request->get('username');
         $name = $request->get('name');
         $description = $request->get('description');
         $droit = $request->get('droit');
         $visibilite = $request->get('visibilite');
 
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
+
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
         if(is_null($user))
             return $this->json([], Response::HTTP_UNAUTHORIZED);
         else{
@@ -83,10 +95,13 @@ class GroupeController extends AbstractFOSRestController
     public function postGroupeMembersAction(Request $request, Request $formData){
         $data = $request->getContent();
         $groupe = $formData->get('idG');
-        $username = $formData->get('username');
+        //$username = $formData->get('username');
+        $header = $formData->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
         $test=json_decode($data,true);
         $memberIDs=$this->userRepository->findBy(array('username'=>$test['contact']));
-        $admin = $this->userRepository->findOneBy(array("username" => $username));
+        $admin = $this->userRepository->findOneBy(array("username" => $username->username));
         $realAdmin = $this->userhasgroupeRepository->createQueryBuilder('u')
             ->where('u.grouperef = ?1')
             ->andWhere('u.userref = ?2')
@@ -126,13 +141,16 @@ class GroupeController extends AbstractFOSRestController
      */
     public function patchGroupeAction(Request $request, int $id){
         $groupe = $this->groupeRepository->find($id);
-        $username = $request->get('username');
+        //$username = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
         $name = $request->get('name');
         $description = $request->get('description');
         $droit = $request->get('droit');
         $visibilite = $request->get('visibilite');
 
-        $admin = $this->userRepository->findOneBy(array("username" => $username));
+        $admin = $this->userRepository->findOneBy(array("username" => $username->username));
         $realAdmin = $this->userhasgroupeRepository->createQueryBuilder('u')
             ->where('u.grouperef=?1')
             ->andWhere('u.userref=?2')
@@ -166,10 +184,13 @@ class GroupeController extends AbstractFOSRestController
     public function deleteGroupeMemberAction(Request $request){
         $data = $request->getContent();
         $groupe = $request->get('idG');
-        $username = $request->get('username');
+        //$username = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
         $test=json_decode($data,true);
         $memberIDs=$this->userRepository->findBy(array('username'=>$test['contact']));
-        $admin = $this->userRepository->findOneBy(array("username" => $username));
+        $admin = $this->userRepository->findOneBy(array("username" => $username->username));
         $realAdmin = $this->userhasgroupeRepository->createQueryBuilder('u')
             ->where('u.grouperef=?1')
             ->andWhere('u.userref=?2')

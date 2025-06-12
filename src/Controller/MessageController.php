@@ -21,7 +21,18 @@ class MessageController extends AbstractController
      *@var UserRepository
      */
     private $userRepository;
+    /**
+     * @var MessageRepository
+     */
     private $messageRepository;
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
 
     public function __construct( UserRepository $userRepository, MessageRepository $messageRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer)
     {
@@ -41,10 +52,13 @@ class MessageController extends AbstractController
         $duration = $request->get('duration');
         $type = $request->get('type');
         $pieceJointe = $request->get('jointe');
-        $username = $request->get('username');
+        //$username = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
         $receiver = $request->get('receiver');
 
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
         $receiver = $this->userRepository->findOneBy(array("username" => $receiver));
 
         if(is_null($user) or is_null($receiver))
@@ -80,9 +94,12 @@ class MessageController extends AbstractController
      * @return |FOS|RestBundle|View|view
      */
     public function getMessageByreceiverAction(Request $request){
-        $username = $request->get('username');
+        //$username = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
 
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
 
         if(is_null($user))
             return $this->json(["message" => "No user found for this username"], Response::HTTP_FORBIDDEN);
@@ -147,9 +164,12 @@ class MessageController extends AbstractController
      */
     public function patchMessageAction(Request $request, int $id){
         $texte = $request->get('message');
-        $username = $request->get('username');
+        //$username = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
 
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
         $realUser = $this->messageRepository->findBy(array("senderref" => $user->getId()));
 
         if($realUser!=[]){

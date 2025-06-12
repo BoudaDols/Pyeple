@@ -21,10 +21,30 @@ class LikeActuController extends AbstractController
      *@var ActualiteRepository
      */
     private $actualiteRepository;
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+    /**
+     * @var UserRepository
+     */
     private $userRepository;
+    /**
+     * @var AbonnementRepository
+     */
     private $abonementRepository;
-    private $hashtagRepository;
+    /**
+     * @var LikeactuRepository
+     */
     private $likeactuRepository;
+    /**
+     * @var HashtagRepository
+     */
+    private $hashtagRepository;
 
     public function __construct(ActualiteRepository $actualiteRepository, LikeactuRepository $likeactuRepository, UserRepository $userRepository, HashtagRepository $hashtagRepository, AbonnementRepository $abonementRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer)
     {
@@ -44,9 +64,12 @@ class LikeActuController extends AbstractController
      */
     public function postLikeActuAction(Request $request){
         $idActu = $request->get('idActu');
-        $username = $request->get('username');
+        //$username = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
 
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
         $actu = $this->actualiteRepository->find($idActu);
 
         if(is_null($actu) or is_null($user))
@@ -81,9 +104,12 @@ class LikeActuController extends AbstractController
      */
     public function deleteLikeActuAction(Request $request){
         $idActu = $request->get('idActu');
-        $username = $request->get('username');
+        //$username = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
 
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
         $actu = $this->actualiteRepository->find($idActu);
 
         if(is_null($actu) or is_null($user))

@@ -25,10 +25,30 @@ class ActualiteController extends AbstractFOSRestController
      *@var ActualiteRepository
      */
     private $actualiteRepository;
+    /**
+     * @var UserRepository
+     */
     private $userRepository;
+    /**
+     * @var AbonnementRepository
+     */
     private $abonementRepository;
+    /**
+     * @var HashtagRepository
+     */
     private $hashtagRepository;
+    /**
+     * @var LikeactuRepository
+     */
     private $likeactuRepository;
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
 
     public function __construct(ActualiteRepository $actualiteRepository, LikeactuRepository $likeactuRepository, UserRepository $userRepository, HashtagRepository $hashtagRepository, AbonnementRepository $abonementRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer)
     {
@@ -78,10 +98,14 @@ class ActualiteController extends AbstractFOSRestController
         $category = $request->get('category');
         $message = $request->get('message');
         $content = $request->get('content');
-        $publisherref = $request->get('publisherref');
+        //$publisherref = $request->get('publisherref');
         $publisherplace = $request->get('publisherplace');
 
-        $publisher = $this->userRepository->findOneBy(array('username'=>$publisherref));
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
+
+        $publisher = $this->userRepository->findOneBy(array('username'=>$username->username));
         if(!is_null($publisher)){
             $actualite = new Actualite();
             $actualite->setCategorie($category)
@@ -179,21 +203,24 @@ class ActualiteController extends AbstractFOSRestController
     }
 
     /**
-     * @param Request $formData
      * @return |FOS|RestBundle|View|view
      * @throws \Exception
      */
-    public function linkedActualitesAction(Request $request, Request $formData){
+    public function linkedActualitesAction(Request $request){
         $data = $request->getContent();
-        $username = $formData->get('username');
+        //$username = $formData->get('username');
         $test=json_decode($data,true);
         $formated=[];
         $aujourdhui = new DateTime();
         $sub30 = $aujourdhui->sub(new DateInterval('P30D'));
 
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
+
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
         $abonements = $this->abonementRepository->findBy(array("abonneref" => $user->getId()));
-        $publisherID=$this->userRepository->findBy(array('username'=>$test['contact']));
+        $publisherID=$this->userRepository->findBy(array('phone'=>$test['contact']));
 
         $expressions=[];
         if(is_null($abonements) and is_null($publisherID)){
@@ -265,13 +292,17 @@ class ActualiteController extends AbstractFOSRestController
      */
     public function othersActualitesAction(Request $request, Request $formData){
         $data = $request->getContent();
-        $username = $formData->get('username');
+        //$username = $formData->get('username');
         $test=json_decode($data,true);
         $formated=[];
         $aujourdhui = new DateTime();
         $sub30 = $aujourdhui->sub(new DateInterval('P30D'));
 
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
+
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
         $abonements = $this->abonementRepository->findBy(array("abonneref" => $user->getId()));
         //$publisherID=$this->userRepository->findBy(array('username'=>$test['contact']));
 

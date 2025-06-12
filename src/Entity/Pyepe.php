@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Pyepe
  *
- * @ORM\Table(name="pyepe", uniqueConstraints={@ORM\UniqueConstraint(name="idPyepe", columns={"idPyepe"})}, indexes={@ORM\Index(name="senderREF", columns={"senderREF"}), @ORM\Index(name="receiverREF", columns={"receiverREF"})})
+ * @ORM\Table(name="pyepe", uniqueConstraints={@ORM\UniqueConstraint(name="idPyepe", columns={"idPyepe"})}, indexes={@ORM\Index(name="receiverREF", columns={"receiverREF"}), @ORM\Index(name="senderREF", columns={"senderREF"})})
  * @ORM\Entity
  */
 class Pyepe

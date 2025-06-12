@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * User
  *
- * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="UNIQ_8D93D649F85E0677", columns={"username"})})
+ * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="special", columns={"special"}), @ORM\UniqueConstraint(name="UNIQ_8D93D649F85E0677", columns={"username"})})
  * @ORM\Entity
  */
 class User implements UserInterface
@@ -56,6 +56,13 @@ class User implements UserInterface
      * @ORM\Column(name="phone", type="bigint", nullable=false)
      */
     private $phone;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="special", type="string", length=255, nullable=false)
+     */
+    private $special;
 
     /**
      * @var json
@@ -178,6 +185,18 @@ class User implements UserInterface
         return $this;
     }
 
+    public function getSpecial(): ?string
+    {
+        return $this->special;
+    }
+
+    public function setSpecial(string $special): self
+    {
+        $this->special = $special;
+
+        return $this;
+    }
+
     public function getRoles(): ?array
     {
         return $this->roles;
@@ -275,24 +294,11 @@ class User implements UserInterface
     }
 
 
-    /**
-     * Returns the salt that was originally used to encode the password.
-     *
-     * This can return null if the password was not encoded using a salt.
-     *
-     * @return string|null The salt
-     */
     public function getSalt()
     {
         // TODO: Implement getSalt() method.
     }
 
-    /**
-     * Removes sensitive data from the user.
-     *
-     * This is important if, at any given point, sensitive information like
-     * the plain-text password is stored on this object.
-     */
     public function eraseCredentials()
     {
         // TODO: Implement eraseCredentials() method.

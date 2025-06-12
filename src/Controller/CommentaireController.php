@@ -23,8 +23,25 @@ class CommentaireController extends AbstractFOSRestController
      * @var CommentaireRepository
      */
     private $actualiteRepository;
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+    /**
+     * @var UserRepository
+     */
     private $userRepository;
+    /**
+     * @var AbonnementRepository
+     */
     private $abonementRepository;
+    /**
+     * @var CommentaireRepository
+     */
     private $commentaireRepository;
 
     public function __construct(ActualiteRepository $actualiteRepository, CommentaireRepository $commentaireRepository, UserRepository $userRepository, AbonnementRepository $abonementRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer)
@@ -45,10 +62,14 @@ class CommentaireController extends AbstractFOSRestController
      */
     public function postCommentaireAction(Request $request){
         $content = $request->get('content');
-        $username = $request->get('username');
+        //$username = $request->get('username');
         $acturef = $request->get('id');
 
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
+
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
         $actu = $this->actualiteRepository->find($acturef);
 
         if(is_null($user) or is_null($actu))

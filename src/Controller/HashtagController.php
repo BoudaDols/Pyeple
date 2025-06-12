@@ -26,6 +26,14 @@ class HashtagController extends AbstractFOSRestController
     private $hashtagRepository;
     private $userRepository;
     private $abonnementRepository;
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
 
     public function __construct(HashtagRepository $hashtagRepository, AbonnementRepository $abonnementRepository, UserRepository $userRepository, EntityManagerInterface $entityManager, SerializerInterface $serializer)
     {
@@ -67,8 +75,11 @@ class HashtagController extends AbstractFOSRestController
     public function postHashtagAction(Request $request){
         $nom = $request->get('name');
         $categorie = $request->get('category');
-        $creator = $request->get('username');
-        $creator = $this->userRepository->findOneBy(array('username'=> $creator));
+        //$creator = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $creator = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
+        $creator = $this->userRepository->findOneBy(array('username'=> $creator->username));
         $description = $request->get('description');
 
         $hashtag = new Hashtag();
@@ -89,7 +100,7 @@ class HashtagController extends AbstractFOSRestController
 
         $abonement = new Abonnement();
         $abonement->setAbonneref($creator->getId())
-            ->setHashtagref($hashtag->getIdhashtag());
+                    ->setHashtagref($hashtag->getIdhashtag());
 
         $em=$this->getDoctrine()->getManager();
         $em->persist($abonement);
@@ -172,8 +183,11 @@ class HashtagController extends AbstractFOSRestController
      * @return |FOS|RestBundle|View|view
      */
     public function linkedHashtagAction(Request $request){
-        $username = $request->get('username');
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+        //$username = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
         if(is_null($user))
             return $this->json([
                 "message" => "User does not exist"
@@ -215,8 +229,11 @@ class HashtagController extends AbstractFOSRestController
      * @return |FOS|RestBundle|View|view
      */
     public function othersHashtagAction(Request $request){
-        $username = $request->get('username');
-        $user = $this->userRepository->findOneBy(array("username" => $username));
+        //$username = $request->get('username');
+        $header = $request->headers->get('Authorization');
+        $username = json_decode(base64_decode(str_replace('_', '/', str_replace('-','+',explode('.', $header)[1]))));
+
+        $user = $this->userRepository->findOneBy(array("username" => $username->username));
         if (is_null($user))
             return $this->json([
                 "message" => "User does not exist"
